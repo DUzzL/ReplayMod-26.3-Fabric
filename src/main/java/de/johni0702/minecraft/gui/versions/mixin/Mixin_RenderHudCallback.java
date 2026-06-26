@@ -19,7 +19,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.util.math.MatrixStack;
 //#endif
 
+// FIXME remap bug: should be remapped via extra mappings
+//#if MC >= 26.2
+//$$ @Mixin(net.minecraft.client.gui.Hud.class)
+//#else
 @Mixin(InGameHud.class)
+//#endif
 public class Mixin_RenderHudCallback {
     @Inject(
             //#if MC>=12005 && MC<12106
@@ -27,6 +32,10 @@ public class Mixin_RenderHudCallback {
             //#else
             method = "render",
             //#endif
+            // FIXME remap bug: should be remapped via extra mappings
+            //#if MC >= 26.2
+            //$$ at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractDemoOverlay(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V")
+            //#else
             //#if MC>=12109
             //$$ at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderDemoTimer(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V")
             //#elseif MC>=12106
@@ -35,6 +44,7 @@ public class Mixin_RenderHudCallback {
             //$$ at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/DebugHud;shouldShowDebugHud()Z")
             //#else
             at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/options/GameOptions;debugEnabled:Z")
+            //#endif
             //#endif
     )
     //#if MC>=12100

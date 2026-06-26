@@ -11,7 +11,7 @@ pluginManagement {
         maven("https://repo.essential.gg/repository/maven-public")
     }
     plugins {
-        id("gg.essential.multi-version.root") version "0.7.0-alpha.4"
+        id("gg.essential.multi-version.root") version "0.7.2"
     }
 }
 
@@ -49,6 +49,7 @@ listOf(
         "1.21.10",
         "1.21.11",
         "26.1",
+        "26.2",
 ).forEach { version ->
     include(":$version")
     project(":$version").apply {

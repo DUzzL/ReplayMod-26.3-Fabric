@@ -2,13 +2,18 @@
 package de.johni0702.minecraft.gui.versions.mixin;
 
 import de.johni0702.minecraft.gui.versions.callbacks.PostRenderScreenCallback;
-import net.minecraft.client.render.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+//#if MC >= 26.2
+//$$ import net.minecraft.client.gui.Gui;
+//#else
+import net.minecraft.client.render.GameRenderer;
+//#endif
 
 //#if MC>=12100
 //$$ import net.minecraft.client.render.RenderTickCounter;
@@ -20,9 +25,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.util.math.MatrixStack;
 //#endif
 
+//#if MC >= 26.2
+//$$ @Mixin(Gui.class)
+//#else
 @Mixin(GameRenderer.class)
+//#endif
 public class MixinGameRenderer {
-    //#if MC >= 26.1
+    //#if MC >= 26.2
+    //$$ private static final String EXTRACT_GUI = "extractRenderState";
+    //#elseif MC >= 26.1
     //$$ private static final String EXTRACT_GUI = "extractGui";
     //#else
     private static final String EXTRACT_GUI = "render";

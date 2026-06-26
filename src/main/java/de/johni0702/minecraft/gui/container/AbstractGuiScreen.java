@@ -202,7 +202,11 @@ public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends 
     }
 
     public void display() {
+        //#if MC >= 26.2
+        //$$ getMinecraft().gui.setScreen(toMinecraft());
+        //#else
         getMinecraft().openScreen(toMinecraft());
+        //#endif
     }
 
     public Background getBackground() {

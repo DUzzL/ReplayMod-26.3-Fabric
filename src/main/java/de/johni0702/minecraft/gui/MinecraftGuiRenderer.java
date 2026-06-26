@@ -36,8 +36,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
@@ -45,6 +45,8 @@ import org.lwjgl.opengl.GL11;
 //#if MC>=12106
 //$$ import net.minecraft.client.texture.AbstractTexture;
 //$$ import org.joml.Matrix3x2fStack;
+//#else
+import net.minecraft.client.render.Tessellator;
 //#endif
 
 //#if MC>=12105
@@ -52,10 +54,8 @@ import org.lwjgl.opengl.GL11;
 //$$ import com.mojang.blaze3d.systems.RenderPass;
 //$$ import com.mojang.blaze3d.textures.GpuTexture;
 //$$ import com.mojang.blaze3d.pipeline.RenderPipeline;
-//$$ import com.mojang.blaze3d.textures.TextureFormat;
 //$$ import net.minecraft.client.gl.Framebuffer;
 //$$ import net.minecraft.client.gl.RenderPipelines;
-//$$ import net.minecraft.client.texture.GlTexture;
 //$$ import java.util.OptionalDouble;
 //$$ import java.util.OptionalInt;
 //#endif
@@ -69,7 +69,9 @@ import org.lwjgl.opengl.GL11;
 //#if MC>=12100
 //$$ import net.minecraft.client.render.RenderLayer;
 //$$ import net.minecraft.client.render.VertexConsumer;
+//#if MC < 1.21.6
 //$$ import net.minecraft.client.render.VertexConsumerProvider;
+//#endif
 //#endif
 
 //#if MC>=12000
@@ -77,7 +79,6 @@ import org.lwjgl.opengl.GL11;
 //#if MC<12105
 //$$ import net.minecraft.client.render.BufferRenderer;
 //#endif
-//$$ import net.minecraft.client.render.Tessellator;
 //$$ import net.minecraft.client.render.VertexFormats;
 //$$ import org.joml.Matrix4f;
 //$$ import java.util.ArrayList;
@@ -238,23 +239,12 @@ public class MinecraftGuiRenderer implements GuiRenderer {
     }
 
     @Override
-    public void bindTexture(int glId) {
+    public void bindTexture(AbstractTexture texture) {
         boundTexture = null;
         //#if MC>=12105
-        //#if MC>=12106
-        //$$ boundTextureGpu = new GlTexture(GlTexture.USAGE_TEXTURE_BINDING, null, TextureFormat.RGBA8, 0, 0, 0, 1, glId) {
+        //$$ boundTextureGpu = texture.getGlTexture();
         //#else
-        //$$ boundTextureGpu = new GlTexture(null, TextureFormat.RGBA8, 0, 0, 0, glId) {
-        //#endif
-        //$$     {
-        //#if MC>=12111
-        //#else
-        //$$         this.needsReinit = false;
-        //#endif
-        //$$     }
-        //$$ };
-        //#else
-        boundTextureGpu = glId;
+        boundTextureGpu = texture.getGlId();
         //#endif
     }
 

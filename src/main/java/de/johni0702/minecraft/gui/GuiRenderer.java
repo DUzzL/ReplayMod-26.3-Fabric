@@ -27,6 +27,7 @@ package de.johni0702.minecraft.gui;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
@@ -57,7 +58,7 @@ public interface GuiRenderer {
 
     void bindTexture(Identifier location);
 
-    void bindTexture(int glId);
+    void bindTexture(AbstractTexture texture);
 
     //#if MC>=12105
     //$$ void bindTexture(GpuTexture texture);

@@ -132,13 +132,25 @@ public abstract class AbstractGuiOverlay<T extends AbstractGuiOverlay<T>> extend
         MinecraftClient mc = getMinecraft();
         if (visible) {
             if (mouseVisible) {
+                //#if MC >= 26.2
+                //$$ if (mc.gui.screen() == null) {
+                //$$     mc.gui.setScreen(userInputGuiScreen);
+                //$$ }
+                //#else
                 if (mc.currentScreen == null) {
                     mc.openScreen(userInputGuiScreen);
                 }
+                //#endif
             } else {
+                //#if MC >= 26.2
+                //$$ if (mc.gui.screen() == userInputGuiScreen) {
+                //$$     mc.gui.setScreen(null);
+                //$$ }
+                //#else
                 if (mc.currentScreen == userInputGuiScreen) {
                     mc.openScreen(null);
                 }
+                //#endif
             }
         }
     }
