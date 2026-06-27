@@ -80,6 +80,8 @@ import org.lwjgl.opengl.GL11;
 //$$ import net.minecraft.client.render.Tessellator;
 //$$ import net.minecraft.client.render.VertexFormats;
 //$$ import org.joml.Matrix4f;
+//$$ import java.util.ArrayList;
+//$$ import java.util.List;
 //#endif
 
 //#if MC>=11700
@@ -182,13 +184,40 @@ public class MinecraftGuiRenderer implements GuiRenderer {
         };
     }
 
+    //#if MC >= 1.20
+    //$$ private List<ScissorBounds> scissorStack = new ArrayList<>();
+    //#endif
+
     @Override
-    public void setDrawingArea(int x, int y, int width, int height) {
+    public void pushScissor(int x, int y, int width, int height) {
+        //#if MC >= 1.20
+        //$$ if (!scissorStack.isEmpty()) {
+        //$$     context.disableScissor();
+        //$$ }
+        //$$ context.enableScissor(x, y, x + width, y + height);
+        //$$ scissorStack.add(new ScissorBounds(x, y, width, height));
+        //#else
         // glScissor origin is bottom left corner whereas otherwise it's top left
         y = scaledHeight - y - height;
 
         int f = (int) scaleFactor;
+        MCVer.pushScissorState();
         MCVer.setScissorBounds(x * f, y * f, width * f, height * f);
+        //#endif
+    }
+
+    @Override
+    public void popScissor() {
+        //#if MC >= 1.20
+        //$$ scissorStack.remove(scissorStack.size() - 1);
+        //$$ context.disableScissor();
+        //$$ if (!scissorStack.isEmpty()) {
+        //$$     ScissorBounds prev = scissorStack.get(scissorStack.size() - 1);
+        //$$     context.enableScissor(prev.x, prev.y, prev.x + prev.width, prev.y + prev.height);
+        //$$ }
+        //#else
+        MCVer.popScissorState();
+        //#endif
     }
 
     private Identifier boundTexture;

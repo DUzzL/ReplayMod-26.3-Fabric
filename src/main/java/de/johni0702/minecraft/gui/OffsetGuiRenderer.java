@@ -32,9 +32,6 @@ import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
-import static de.johni0702.minecraft.gui.versions.MCVer.popScissorState;
-import static de.johni0702.minecraft.gui.versions.MCVer.pushScissorState;
-
 //#if MC>=12105
 //$$ import com.mojang.blaze3d.textures.GpuTexture;
 //#endif
@@ -120,9 +117,9 @@ public class OffsetGuiRenderer implements GuiRenderer {
     }
 
     @Override
-    public void setDrawingArea(int x, int y, int width, int height) {
+    public void pushScissor(int x, int y, int width, int height) {
         if (!strict) {
-            renderer.setDrawingArea(x + position.getX(), y + position.getY(), width, height);
+            renderer.pushScissor(x + position.getX(), y + position.getY(), width, height);
             return;
         }
         int x2 = x + width;
@@ -137,16 +134,20 @@ public class OffsetGuiRenderer implements GuiRenderer {
         x2 = Math.max(x2, x);
         y2 = Math.max(y2, y);
         // Pass to parent
-        renderer.setDrawingArea(x, y, x2 - x, y2 - y);
+        renderer.pushScissor(x, y, x2 - x, y2 - y);
+    }
+
+    @Override
+    public void popScissor() {
+        renderer.popScissor();
     }
 
     public void startUsing() {
-        pushScissorState();
-        setDrawingArea(0, 0, size.getWidth(), size.getHeight());
+        pushScissor(0, 0, size.getWidth(), size.getHeight());
     }
 
     public void stopUsing() {
-        popScissorState();
+        popScissor();
     }
 
     @Override

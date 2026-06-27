@@ -52,7 +52,8 @@ public interface GuiRenderer {
 
     ReadableDimension getSize();
 
-    void setDrawingArea(int x, int y, int width, int height);
+    void pushScissor(int x, int y, int width, int height);
+    void popScissor();
 
     void bindTexture(Identifier location);
 

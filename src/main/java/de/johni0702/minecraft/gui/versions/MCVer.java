@@ -52,14 +52,14 @@ public class MCVer {
         return MinecraftClient.getInstance();
     }
 
-    private static class ScissorBounds {
+    public static class ScissorBounds {
         private static final ScissorBounds DISABLED = new ScissorBounds(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
-        private final int x;
-        private final int y;
-        private final int width;
-        private final int height;
+        public final int x;
+        public final int y;
+        public final int width;
+        public final int height;
 
-        private ScissorBounds(int x, int y, int width, int height) {
+        public ScissorBounds(int x, int y, int width, int height) {
             this.x = x;
             this.y = y;
             this.width = width;
@@ -79,6 +79,7 @@ public class MCVer {
             return Objects.hash(x, y, width, height);
         }
     }
+    //#if MC < 1.20
     private static final ArrayDeque<ScissorBounds> scissorStateStack = new ArrayDeque<>();
     private static ScissorBounds scissorState = ScissorBounds.DISABLED;
 
@@ -118,6 +119,7 @@ public class MCVer {
             GL11.glDisable(GL11.GL_SCISSOR_TEST);
         }
     }
+    //#endif
 
     //#if MC>=11400
     public static Window newScaledResolution(MinecraftClient mc) {
