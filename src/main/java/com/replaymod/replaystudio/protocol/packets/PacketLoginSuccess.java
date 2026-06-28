@@ -33,12 +33,14 @@ public class PacketLoginSuccess {
     private final String name;
     private final List<Property> properties; // 1.19+
     private final boolean strictErrorHandling; // 1.20.5 - 1.21.1
+    private final UUID sessionId; // 26.2+
 
-    public PacketLoginSuccess(UUID id, String name, List<Property> properties, boolean strictErrorHandling) {
+    public PacketLoginSuccess(UUID id, String name, List<Property> properties, boolean strictErrorHandling, UUID sessionId) {
         this.id = id;
         this.name = name;
         this.properties = properties;
         this.strictErrorHandling = strictErrorHandling;
+        this.sessionId = sessionId;
     }
 
     public static PacketLoginSuccess read(Packet packet) throws IOException {
@@ -58,7 +60,11 @@ public class PacketLoginSuccess {
             if (packet.atLeast(ProtocolVersion.v1_20_5) && packet.olderThan(ProtocolVersion.v1_21_2)) {
                 strictErrorHandling = in.readBoolean();
             }
-            return new PacketLoginSuccess(id, name, properties, strictErrorHandling);
+            UUID sessionId = null;
+            if (packet.atLeast(ProtocolVersion.v26_2)) {
+                sessionId = in.readUUID();
+            }
+            return new PacketLoginSuccess(id, name, properties, strictErrorHandling, sessionId);
         }
     }
 
@@ -76,6 +82,9 @@ public class PacketLoginSuccess {
             }
             if (packet.atLeast(ProtocolVersion.v1_20_5) && packet.olderThan(ProtocolVersion.v1_21_2)) {
                 out.writeBoolean(strictErrorHandling);
+            }
+            if (packet.atLeast(ProtocolVersion.v26_2)) {
+                out.writeUUID(sessionId);
             }
         }
         return packet;

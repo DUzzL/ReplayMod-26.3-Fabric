@@ -83,7 +83,9 @@ public class PacketTeam {
             in.readString(); // prefix
             in.readString(); // suffix
         }
-        in.readByte(); // flags
+        if (packet.olderThan(ProtocolVersion.v26_2)) {
+            in.readByte(); // flags
+        }
         if (packet.atLeast(ProtocolVersion.v1_8)) {
             if (packet.atLeast(ProtocolVersion.v1_21_5)) {
                 in.readVarInt(); // name tag visibility
@@ -95,12 +97,17 @@ public class PacketTeam {
                 }
             }
             if (packet.atLeast(ProtocolVersion.v1_13)) {
-                in.readVarInt(); // color
+                if (packet.olderThan(ProtocolVersion.v26_2) || in.readBoolean()) {
+                    in.readVarInt(); // color
+                }
                 in.readText(); // prefix
                 in.readText(); // suffix
             } else {
                 in.readByte(); // color
             }
+        }
+        if (packet.atLeast(ProtocolVersion.v26_2)) {
+            in.readByte(); // flags
         }
     }
 

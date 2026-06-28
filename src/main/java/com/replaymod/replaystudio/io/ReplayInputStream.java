@@ -104,7 +104,7 @@ public class ReplayInputStream extends InputStream {
         this.outputLoginPhase = registry.getState() == State.LOGIN;
         if (!includeLoginPhase && outputLoginPhase) {
             // For Replays older than version 14, immediately end the Login phase to enter Play phase where the replay starts
-            buffer.offer(new PacketData(0, new PacketLoginSuccess(UUID.nameUUIDFromBytes(new byte[0]), "Player", Collections.emptyList(), false).write(registry)));
+            buffer.offer(new PacketData(0, new PacketLoginSuccess(UUID.nameUUIDFromBytes(new byte[0]), "Player", Collections.emptyList(), false, new UUID(0, 0)).write(registry)));
             this.registry = PacketTypeRegistry.get(registry.getVersion(), State.PLAY);
         } else if (includeLoginPhase && !outputLoginPhase) {
             this.registry = PacketTypeRegistry.get(registry.getVersion(), State.LOGIN);

@@ -51,8 +51,9 @@ public class PacketJoinGame {
     public boolean flatWorld; // 1.16+
     public IGlobalPosition lastDeathPosition; // 1.19+
     public int portalCooldown; // 1.20+
-    public boolean enforcesSecureChat; // 1.20.5+
     public int seaLevel; // 1.21.2+
+    public boolean onlineMode; // 26.2+
+    public boolean enforcesSecureChat; // 1.20.5+
 
     public PacketJoinGame() {
     }
@@ -78,8 +79,9 @@ public class PacketJoinGame {
         this.flatWorld = other.flatWorld;
         this.lastDeathPosition = other.lastDeathPosition;
         this.portalCooldown = other.portalCooldown;
-        this.enforcesSecureChat = other.enforcesSecureChat;
         this.seaLevel = other.seaLevel;
+        this.onlineMode = other.onlineMode;
+        this.enforcesSecureChat = other.enforcesSecureChat;
     }
 
     public static PacketJoinGame read(Packet packet, /* 1.20.2+ */ Registries registries) throws IOException {
@@ -186,6 +188,9 @@ public class PacketJoinGame {
         }
         if (packet.atLeast(ProtocolVersion.v1_21_2)) {
             this.seaLevel = in.readVarInt();
+        }
+        if (packet.atLeast(ProtocolVersion.v26_2)) {
+            this.onlineMode = in.readBoolean();
         }
         if (packet.atLeast(ProtocolVersion.v1_20_5)) {
             this.enforcesSecureChat = in.readBoolean();
@@ -295,6 +300,9 @@ public class PacketJoinGame {
         }
         if (packet.atLeast(ProtocolVersion.v1_21_2)) {
             out.writeVarInt(this.seaLevel);
+        }
+        if (packet.atLeast(ProtocolVersion.v26_2)) {
+            out.writeBoolean(this.onlineMode);
         }
         if (packet.atLeast(ProtocolVersion.v1_20_5)) {
             out.writeBoolean(this.enforcesSecureChat);
