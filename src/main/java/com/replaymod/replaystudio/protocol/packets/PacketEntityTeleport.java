@@ -34,7 +34,31 @@ public class PacketEntityTeleport {
             } else {
                 in.readInt(); // entity id
             }
-            if (packet.atLeast(ProtocolVersion.v1_21_2)) {
+            if (packet.atLeast(PacketTypeRegistry.MC_26_3)) {
+                // Entity Position Sync: path, then yaw, pitch and on-ground flag.
+                // A stepped path stores the position before the tick offset for every step.
+                int pathType = in.readVarInt();
+                double x, y, z;
+                if (pathType == 1) { // stepped path
+                    int stepCount = in.readVarInt();
+                    x = y = z = 0;
+                    for (int i = 0; i < stepCount; i++) {
+                        // The absolute position of the final step is used.
+                        x = in.readDouble();
+                        y = in.readDouble();
+                        z = in.readDouble();
+                        in.readVarInt(); // tick offset
+                    }
+                } else { // linear path
+                    x = in.readDouble();
+                    y = in.readDouble();
+                    z = in.readDouble();
+                }
+                float yaw = in.readFloat();
+                float pitch = in.readFloat();
+                in.readBoolean(); // on ground
+                return new Location(x, y, z, yaw, pitch);
+            } else if (packet.atLeast(ProtocolVersion.v1_21_2)) {
                 double x = in.readDouble();
                 double y = in.readDouble();
                 double z = in.readDouble();
@@ -53,22 +77,33 @@ public class PacketEntityTeleport {
     public static Packet write(PacketTypeRegistry registry, int entityId, Location location, boolean onGround) throws IOException {
         Packet packet = new Packet(registry, PacketType.EntityTeleport);
         try (Packet.Writer out = packet.overwrite()) {
-            if (packet.atLeast(ProtocolVersion.v1_8)) {
+            if (packet.atLeast(PacketTypeRegistry.MC_26_3)) {
                 out.writeVarInt(entityId);
-            } else {
-                out.writeInt(entityId);
-            }
-            if (packet.atLeast(ProtocolVersion.v1_21_2)) {
+                // This writer only produces linear paths.
+                out.writeVarInt(0); // path type: linear
                 out.writeDouble(location.getX());
                 out.writeDouble(location.getY());
                 out.writeDouble(location.getZ());
-                out.writeDouble(0); // unused
-                out.writeDouble(0); // unused
-                out.writeDouble(0); // unused
                 out.writeFloat(location.getYaw());
                 out.writeFloat(location.getPitch());
             } else {
-                SpawnEntity.writeXYZYaPi(packet, out, location);
+                if (packet.atLeast(ProtocolVersion.v1_8)) {
+                    out.writeVarInt(entityId);
+                } else {
+                    out.writeInt(entityId);
+                }
+                if (packet.atLeast(ProtocolVersion.v1_21_2)) {
+                    out.writeDouble(location.getX());
+                    out.writeDouble(location.getY());
+                    out.writeDouble(location.getZ());
+                    out.writeDouble(0); // unused
+                    out.writeDouble(0); // unused
+                    out.writeDouble(0); // unused
+                    out.writeFloat(location.getYaw());
+                    out.writeFloat(location.getPitch());
+                } else {
+                    SpawnEntity.writeXYZYaPi(packet, out, location);
+                }
             }
             if (packet.atLeast(ProtocolVersion.v1_8)) {
                 out.writeBoolean(onGround);

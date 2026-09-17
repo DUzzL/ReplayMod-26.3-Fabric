@@ -34,6 +34,44 @@ public class PacketEntityMovement {
         boolean hasPos = type == PacketType.EntityPosition || type == PacketType.EntityPositionRotation;
         boolean hasRot = type == PacketType.EntityRotation || type == PacketType.EntityPositionRotation;
         try (Packet.Reader in = packet.reader()) {
+            if (packet.atLeast(PacketTypeRegistry.MC_26_3)) {
+                in.readVarInt(); // entity id
+                DPosition pos = null;
+                Pair<Float, Float> yawPitch = null;
+                boolean onGround = true;
+                if (hasPos) {
+                    int properties = in.readVarInt();
+                    onGround = (properties & 1) != 0; // bit 0: on ground
+                    int stepCount = properties >>> 1; // remaining bits: number of steps
+                    if (stepCount > 0) {
+                        // Each step consists of at least a VarInt tick offset and three shorts.
+                        if (stepCount > in.asBuf().readableBytes() / 7) {
+                            throw new IOException("Truncated stepped movement data");
+                        }
+                        int dx = 0, dy = 0, dz = 0;
+                        for (int i = 0; i < stepCount; i++) {
+                            in.readVarInt(); // tick offset
+                            dx += in.readShort();
+                            dy += in.readShort();
+                            dz += in.readShort();
+                        }
+                        pos = new DPosition(dx / 4096.0, dy / 4096.0, dz / 4096.0);
+                    } else {
+                        pos = new DPosition(
+                                in.readShort() / 4096.0,
+                                in.readShort() / 4096.0,
+                                in.readShort() / 4096.0
+                        );
+                    }
+                }
+                if (hasRot) {
+                    yawPitch = Pair.of(
+                            in.readByte() / 256f * 360,
+                            in.readByte() / 256f * 360
+                    );
+                }
+                return Triple.of(pos, yawPitch, onGround);
+            }
             if (packet.atLeast(ProtocolVersion.v1_8)) {
                 in.readVarInt(); // entity id
             } else {
@@ -89,6 +127,21 @@ public class PacketEntityMovement {
         }
         Packet packet = new Packet(registry, type);
         try (Packet.Writer out = packet.overwrite()) {
+            if (packet.atLeast(PacketTypeRegistry.MC_26_3)) {
+                out.writeVarInt(entityId);
+                if (hasPos) {
+                    // bit 0: on ground, remaining bits: number of steps (this writer only produces linear deltas)
+                    out.writeVarInt(onGround ? 1 : 0);
+                    out.writeShort((int) (deltaPos.getX() * 4096));
+                    out.writeShort((int) (deltaPos.getY() * 4096));
+                    out.writeShort((int) (deltaPos.getZ() * 4096));
+                }
+                if (hasRot) {
+                    out.writeByte((int) (yawPitch.getKey() / 360 * 256));
+                    out.writeByte((int) (yawPitch.getValue() / 360 * 256));
+                }
+                return packet;
+            }
             if (packet.atLeast(ProtocolVersion.v1_8)) {
                 out.writeVarInt(entityId);
             } else {

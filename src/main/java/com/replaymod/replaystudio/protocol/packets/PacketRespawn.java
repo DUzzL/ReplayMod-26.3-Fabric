@@ -72,9 +72,18 @@ public class PacketRespawn {
         if (packet.olderThan(ProtocolVersion.v1_14)) {
             this.difficulty = in.readByte();
         }
-        this.gameMode = in.readByte();
+        if (packet.atLeast(PacketTypeRegistry.MC_26_3)) {
+            this.gameMode = (byte) in.readVarInt();
+        } else {
+            this.gameMode = in.readByte();
+        }
         if (packet.atLeast(ProtocolVersion.v1_16)) {
-            this.prevGameMode = in.readByte();
+            if (packet.atLeast(PacketTypeRegistry.MC_26_3)) {
+                // 26.3 serializes the previous game mode as 0 = absent, n = n - 1
+                this.prevGameMode = (byte) (in.readVarInt() - 1);
+            } else {
+                this.prevGameMode = in.readByte();
+            }
         }
         if (packet.atLeast(ProtocolVersion.v1_16)) {
             this.debugWorld = in.readBoolean();
@@ -138,9 +147,17 @@ public class PacketRespawn {
         if (packet.olderThan(ProtocolVersion.v1_14)) {
             out.writeByte(this.difficulty);
         }
-        out.writeByte(this.gameMode);
+        if (packet.atLeast(PacketTypeRegistry.MC_26_3)) {
+            out.writeVarInt(this.gameMode);
+        } else {
+            out.writeByte(this.gameMode);
+        }
         if (packet.atLeast(ProtocolVersion.v1_16)) {
-            out.writeByte(this.prevGameMode);
+            if (packet.atLeast(PacketTypeRegistry.MC_26_3)) {
+                out.writeVarInt(this.prevGameMode + 1);
+            } else {
+                out.writeByte(this.prevGameMode);
+            }
             out.writeBoolean(this.debugWorld);
             out.writeBoolean(this.flatWorld);
             if (packet.atLeast(ProtocolVersion.v1_20_2)) {

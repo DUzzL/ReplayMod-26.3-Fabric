@@ -31,6 +31,7 @@ import com.replaymod.replaystudio.lib.viaversion.api.protocol.packet.mapping.Pac
 import com.replaymod.replaystudio.lib.viaversion.api.protocol.packet.mapping.PacketMappings;
 import com.replaymod.replaystudio.lib.viaversion.api.protocol.packet.provider.PacketTypeMap;
 import com.replaymod.replaystudio.lib.viaversion.api.protocol.version.ProtocolVersion;
+import com.replaymod.replaystudio.lib.viaversion.api.protocol.version.VersionType;
 import com.replaymod.replaystudio.lib.viaversion.protocols.v1_13_2to1_14.Protocol1_13_2To1_14;
 import com.replaymod.replaystudio.lib.viaversion.protocols.v1_15_2to1_16.Protocol1_15_2To1_16;
 import com.replaymod.replaystudio.lib.viaversion.protocols.v1_16_4to1_17.Protocol1_16_4To1_17;
@@ -51,12 +52,126 @@ import java.util.List;
 import java.util.Map;
 
 public class PacketTypeRegistry {
+    /**
+     * Protocol version of Minecraft 26.3.
+     * <p>
+     * ViaVersion (as of the snapshot used by ReplayStudio) does not know about this version yet, so it is added
+     * here and the packet ids for it are taken from {@link #MC_26_3_PACKET_IDS}.
+     */
+    public static final ProtocolVersion MC_26_3 = new ProtocolVersion(VersionType.RELEASE, 777, -1, "26.3", null);
+
+    /**
+     * Real packet ids of the vanilla 26.3 client per protocol state (clientbound).
+     * <p>
+     * These are the ids the vanilla client registers in {@code GameProtocols}, {@code ConfigurationProtocols}
+     * and {@code LoginProtocols} (id = registration index, with the bundle delimiter registered first). They
+     * have been extracted from the 26.3 client jar and verified against actual recorded 26.3 replays.
+     */
+    private static final Map<State, Map<Integer, PacketType>> MC_26_3_PACKET_IDS = new EnumMap<>(State.class);
+
+    static {
+        Map<Integer, PacketType> play = new HashMap<>();
+        play.put(0, PacketType.Bundle);
+        play.put(1, PacketType.SpawnObject);
+        play.put(2, PacketType.EntityAnimation);
+        play.put(3, PacketType.Statistics);
+        play.put(5, PacketType.BlockBreakAnim);
+        play.put(6, PacketType.UpdateTileEntity);
+        play.put(7, PacketType.BlockValue);
+        play.put(8, PacketType.BlockChange);
+        play.put(10, PacketType.Difficulty);
+        play.put(15, PacketType.TabComplete);
+        play.put(17, PacketType.CloseWindow);
+        play.put(18, PacketType.WindowItems);
+        play.put(19, PacketType.WindowProperty);
+        play.put(20, PacketType.SetSlot);
+        play.put(24, PacketType.PluginMessage);
+        play.put(32, PacketType.Disconnect);
+        play.put(34, PacketType.EntityStatus);
+        play.put(35, PacketType.EntityTeleport);
+        play.put(36, PacketType.Explosion);
+        play.put(38, PacketType.UnloadChunk);
+        play.put(39, PacketType.NotifyClient);
+        play.put(42, PacketType.OpenHorseWindow);
+        play.put(45, PacketType.KeepAlive);
+        play.put(46, PacketType.ChunkData);
+        play.put(47, PacketType.PlayEffect);
+        play.put(48, PacketType.SpawnParticle);
+        play.put(49, PacketType.UpdateLight);
+        play.put(50, PacketType.JoinGame);
+        play.put(52, PacketType.MapData);
+        play.put(53, PacketType.TradeList);
+        play.put(54, PacketType.EntityPosition);
+        play.put(55, PacketType.EntityPositionRotation);
+        play.put(57, PacketType.EntityRotation);
+        play.put(61, PacketType.OpenTileEntityEditor);
+        play.put(65, PacketType.PlayerAbilities);
+        play.put(67, PacketType.CombatEnd);
+        play.put(68, PacketType.CombatEnter);
+        play.put(69, PacketType.CombatEntityDead);
+        play.put(70, PacketType.PlayerListEntryRemove);
+        play.put(71, PacketType.PlayerListEntry);
+        play.put(73, PacketType.PlayerPositionRotation);
+        play.put(78, PacketType.DestroyEntities);
+        play.put(79, PacketType.EntityRemoveEffect);
+        play.put(80, PacketType.ResetScore);
+        play.put(84, PacketType.Respawn);
+        play.put(85, PacketType.EntityHeadLook);
+        play.put(86, PacketType.MultiBlockChange);
+        play.put(95, PacketType.SwitchCamera);
+        play.put(96, PacketType.UpdateViewPosition);
+        play.put(97, PacketType.UpdateViewDistance);
+        play.put(99, PacketType.SpawnPosition);
+        play.put(100, PacketType.DisplayScoreboard);
+        play.put(101, PacketType.EntityMetadata);
+        play.put(102, PacketType.EntityAttach);
+        play.put(103, PacketType.EntityVelocity);
+        play.put(104, PacketType.EntityEquipment);
+        play.put(105, PacketType.SetExperience);
+        play.put(106, PacketType.UpdateHealth);
+        play.put(107, PacketType.ChangeHeldItem);
+        play.put(108, PacketType.ScoreboardObjective);
+        play.put(109, PacketType.SetPassengers);
+        play.put(111, PacketType.Team);
+        play.put(112, PacketType.UpdateScore);
+        play.put(113, PacketType.UpdateSimulationDistance);
+        play.put(115, PacketType.UpdateTime);
+        play.put(118, PacketType.EntitySoundEffect);
+        play.put(119, PacketType.PlaySound);
+        play.put(120, PacketType.Reconfigure);
+        play.put(124, PacketType.Chat);
+        play.put(127, PacketType.EntityCollectItem);
+        play.put(134, PacketType.EntityProperties);
+        play.put(135, PacketType.EntityEffect);
+        play.put(137, PacketType.Tags);
+        MC_26_3_PACKET_IDS.put(State.PLAY, play);
+
+        Map<Integer, PacketType> configuration = new HashMap<>();
+        configuration.put(1, PacketType.ConfigCustomPayload);
+        configuration.put(2, PacketType.ConfigDisconnect);
+        configuration.put(3, PacketType.ConfigFinish);
+        configuration.put(4, PacketType.ConfigKeepAlive);
+        configuration.put(5, PacketType.ConfigPing);
+        configuration.put(7, PacketType.ConfigRegistries);
+        configuration.put(13, PacketType.ConfigFeatures);
+        configuration.put(14, PacketType.ConfigTags);
+        configuration.put(15, PacketType.ConfigSelectKnownPacks);
+        MC_26_3_PACKET_IDS.put(State.CONFIGURATION, configuration);
+
+        Map<Integer, PacketType> login = new HashMap<>();
+        login.put(2, PacketType.LoginSuccess);
+        MC_26_3_PACKET_IDS.put(State.LOGIN, login);
+    }
+
     private static Map<ProtocolVersion, EnumMap<State, PacketTypeRegistry>> forVersionAndState = new HashMap<>();
     private static Field clientbound;
 
     static {
         CustomViaManager.initialize();
-        for (ProtocolVersion version : ProtocolVersion.getProtocols()) {
+        // Copy the regular ViaVersion list and extend it by our own 26.3 version
+        List<ProtocolVersion> protocols = new ArrayList<>(ProtocolVersion.getProtocols());
+        protocols.add(MC_26_3);
+        for (ProtocolVersion version : protocols) {
             EnumMap<State, PacketTypeRegistry> forState = new EnumMap<>(State.class);
             for (State state : State.values()) {
                 forState.put(state, new PacketTypeRegistry(version, state));
@@ -79,6 +194,27 @@ public class PacketTypeRegistry {
     private PacketTypeRegistry(ProtocolVersion version, State state) {
         this.version = version;
         this.state = state;
+
+        if (MC_26_3.equals(version)) {
+            // ViaVersion has no native 26.3 converter, so the ids cannot be derived by walking the ViaVersion
+            // protocol chain. Use the real ids registered by the vanilla 26.3 client instead.
+            PacketType unknown26_3 = null;
+            for (PacketType packetType : PacketType.values()) {
+                if (packetType.isUnknown() && packetType.getState() == state) {
+                    unknown26_3 = packetType;
+                    break;
+                }
+            }
+            this.unknown = unknown26_3;
+            Map<Integer, PacketType> ids26_3 = MC_26_3_PACKET_IDS.get(state);
+            if (ids26_3 != null) {
+                for (Map.Entry<Integer, PacketType> entry : ids26_3.entrySet()) {
+                    typeForId.put(entry.getKey(), entry.getValue());
+                    idForType.put(entry.getValue(), entry.getKey());
+                }
+            }
+            return;
+        }
 
         PacketType unknown = null;
         packets: for (PacketType packetType : PacketType.values()) {

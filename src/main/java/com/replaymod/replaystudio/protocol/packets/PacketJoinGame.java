@@ -171,8 +171,14 @@ public class PacketJoinGame {
             }
             this.dimension = in.readString();
             this.seed = in.readLong();
-            this.gameMode = in.readByte();
-            this.prevGameMode = in.readByte();
+            if (packet.atLeast(PacketTypeRegistry.MC_26_3)) {
+                this.gameMode = (byte) in.readVarInt();
+                // 26.3 serializes the previous game mode as 0 = absent, n = n - 1
+                this.prevGameMode = (byte) (in.readVarInt() - 1);
+            } else {
+                this.gameMode = in.readByte();
+                this.prevGameMode = in.readByte();
+            }
         }
         if (packet.atLeast(ProtocolVersion.v1_16)) {
             this.debugWorld = in.readBoolean();
@@ -280,8 +286,13 @@ public class PacketJoinGame {
             }
             out.writeString(this.dimension);
             out.writeLong(this.seed);
-            out.writeByte(this.gameMode);
-            out.writeByte(this.prevGameMode);
+            if (packet.atLeast(PacketTypeRegistry.MC_26_3)) {
+                out.writeVarInt(this.gameMode);
+                out.writeVarInt(this.prevGameMode + 1);
+            } else {
+                out.writeByte(this.gameMode);
+                out.writeByte(this.prevGameMode);
+            }
         }
         if (packet.atLeast(ProtocolVersion.v1_16)) {
             out.writeBoolean(this.debugWorld);
