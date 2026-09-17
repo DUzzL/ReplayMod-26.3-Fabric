@@ -1,5 +1,23 @@
-# ReplayMod
+# ReplayMod 26.3 — Fabric
 A Minecraft mod to record game sessions and replay them afterwards from any perspective.
+
+This repository contains an unofficial Fabric port of [ReplayMod](https://github.com/ReplayMod/ReplayMod) 2.6.27 to Minecraft 26.3. It includes the SDL input and RenderPearl changes, updated replay protocol support, and a rendering progress screen fix for Advanced UI Scaling.
+
+The 26.3 build requires Fabric Loader 0.19.5 or newer and Java 25 to run. A Forge build is not included.
+
+### Building Minecraft 26.3
+
+```sh
+git clone --recurse-submodules https://github.com/DUzzL/ReplayMod-26.3-Fabric.git
+cd ReplayMod-26.3-Fabric
+./gradlew :26.3:build
+```
+
+Use JDK 21 to run Gradle and provide JDK 25 for the Minecraft 26.3 compiler toolchain. The multi-version build also uses JDK 8, 16, and 17 for older dependencies; configure their paths with `org.gradle.java.installations.paths` if Gradle cannot discover them.
+
+The distributable JAR is generated in `versions/26.3/build/libs/` (use the JAR without the `-raw` or `-sources` suffix).
+
+The modified jGui and ReplayStudio submodules are pinned to commits published on the `deps/jgui-26.3` and `deps/replaystudio-26.3` branches of this repository. Use `git submodule update --init --recursive` after pulling updates. Upstream attribution and licenses remain in each submodule.
 
 ## Building
 Make sure your sub-projects are up-to-date: `git submodule update --init --recursive`

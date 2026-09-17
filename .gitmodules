@@ -1,10 +1,12 @@
 [submodule "jGui"]
 	path = jGui
-	url = https://github.com/ReplayMod/jGui
+	url = https://github.com/DUzzL/ReplayMod-26.3-Fabric.git
+	branch = deps/jgui-26.3
 
 [submodule "src/main/resources/assets/replaymod/lang"]
 	path = src/main/resources/assets/replaymod/lang
 	url = https://github.com/ReplayMod/Translations
 [submodule "ReplayStudio"]
 	path = libs/ReplayStudio
-	url = ../ReplayStudio
+	url = https://github.com/DUzzL/ReplayMod-26.3-Fabric.git
+	branch = deps/replaystudio-26.3
