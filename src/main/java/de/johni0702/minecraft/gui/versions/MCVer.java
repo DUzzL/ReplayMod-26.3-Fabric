@@ -25,7 +25,11 @@ import net.minecraft.text.LiteralText;
 
 //#if MC>=11400
 import net.minecraft.client.util.Window;
+//#if MC>=26.3
+//$$ import com.mojang.blaze3d.platform.InputConstants;
+//#else
 import org.lwjgl.glfw.GLFW;
+//#endif
 //#else
 //$$ import net.minecraft.client.gui.GuiScreen;
 //$$ import net.minecraft.client.gui.ScaledResolution;
@@ -253,6 +257,23 @@ public class MCVer {
 
     //#if MC>=11400
     public static abstract class Keyboard {
+        //#if MC>=26.3
+        //$$ public static final int KEY_ESCAPE = InputConstants.KEY_ESCAPE;
+        //$$ public static final int KEY_HOME = InputConstants.KEY_HOME;
+        //$$ public static final int KEY_END = InputConstants.KEY_END;
+        //$$ public static final int KEY_UP = InputConstants.KEY_UP;
+        //$$ public static final int KEY_DOWN = InputConstants.KEY_DOWN;
+        //$$ public static final int KEY_LEFT = InputConstants.KEY_LEFT;
+        //$$ public static final int KEY_RIGHT = InputConstants.KEY_RIGHT;
+        //$$ public static final int KEY_BACK = InputConstants.KEY_BACKSPACE;
+        //$$ public static final int KEY_DELETE = InputConstants.KEY_DELETE;
+        //$$ public static final int KEY_RETURN = InputConstants.KEY_RETURN;
+        //$$ public static final int KEY_TAB = InputConstants.KEY_TAB;
+        //$$ public static final int KEY_A = InputConstants.KEY_A;
+        //$$ public static final int KEY_C = InputConstants.KEY_C;
+        //$$ public static final int KEY_V = InputConstants.KEY_V;
+        //$$ public static final int KEY_X = InputConstants.KEY_X;
+        //#else
         public static final int KEY_ESCAPE = GLFW.GLFW_KEY_ESCAPE;
         public static final int KEY_HOME = GLFW.GLFW_KEY_HOME;
         public static final int KEY_END = GLFW.GLFW_KEY_END;
@@ -268,6 +289,7 @@ public class MCVer {
         public static final int KEY_C = GLFW.GLFW_KEY_C;
         public static final int KEY_V = GLFW.GLFW_KEY_V;
         public static final int KEY_X = GLFW.GLFW_KEY_X;
+        //#endif
 
         public static void enableRepeatEvents(boolean enabled) {
             //#if MC>=11903

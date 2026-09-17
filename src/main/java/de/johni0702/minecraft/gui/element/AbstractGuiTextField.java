@@ -328,6 +328,9 @@ public abstract class AbstractGuiTextField<T extends AbstractGuiTextField<T>>
         }
         if (this.focused != isFocused) {
             this.focused = isFocused;
+            //#if MC>=26.3
+            //$$ MCVer.getMinecraft().textInputManager().onTextInputFocusChange(this, isFocused);
+            //#endif
             onFocusChanged(this.focused);
         }
         return getThis();

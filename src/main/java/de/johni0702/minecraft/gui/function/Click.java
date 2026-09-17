@@ -50,7 +50,26 @@ public class Click implements InputWithModifiers, ReadablePoint {
     }
     //#endif
 
-    //#if MC>=12109
+    //#if MC>=26.3
+    //$$ public Click(net.minecraft.client.input.MouseButtonEvent click) {
+    //$$     this(click.x(), click.y(), fromNativeButton(click.button()), click.modifiers());
+    //$$ }
+    //$$ public net.minecraft.client.input.MouseButtonEvent toMC() {
+    //$$     return new net.minecraft.client.input.MouseButtonEvent(x, y, new net.minecraft.client.input.MouseButtonInfo(toNativeButton(button), modifiers));
+    //$$ }
+    //$$ private static int fromNativeButton(int button) {
+    //$$     if (button == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT) return 0;
+    //$$     if (button == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_RIGHT) return 1;
+    //$$     if (button == com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_MIDDLE) return 2;
+    //$$     return button;
+    //$$ }
+    //$$ private static int toNativeButton(int button) {
+    //$$     if (button == 0) return com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT;
+    //$$     if (button == 1) return com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_RIGHT;
+    //$$     if (button == 2) return com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_MIDDLE;
+    //$$     return button;
+    //$$ }
+    //#elseif MC>=12109
     //$$ public Click(net.minecraft.client.gui.Click click) {
     //$$     this(click.x(), click.y(), click.button(), click.modifiers());
     //$$ }

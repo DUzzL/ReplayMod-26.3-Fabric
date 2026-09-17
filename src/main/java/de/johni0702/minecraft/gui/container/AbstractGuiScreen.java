@@ -475,6 +475,19 @@ public abstract class AbstractGuiScreen<T extends AbstractGuiScreen<T>> extends 
             invokeAll(Loadable.class, Loadable::load);
         }
 
+        //#if MC>=26.1
+        //$$ @Override
+        //$$ protected void repositionElements() {
+        //$$     // Since 26.1 the vanilla Screen only calls init() on the very first init(width, height);
+        //$$     // subsequent calls and resizes only trigger repositionElements(). We need to keep our
+        //$$     // screen size in sync with the vanilla width/height fields, otherwise the jGui layout
+        //$$     // is frozen at whatever size was passed to the very first init call (e.g. a different
+        //$$     // video resolution while ReplayMod is rendering).
+        //$$     screenSize = new Dimension(width, height);
+        //$$     super.repositionElements();
+        //$$ }
+        //#endif
+
         public T getWrapper() {
             return AbstractGuiScreen.this.getThis();
         }
