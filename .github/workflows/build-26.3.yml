@@ -1,0 +1,39 @@
+name: Build Fabric 26.3
+on:
+  push:
+    branches:
+      - fix/26.3-sdl-unbound-key
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          persist-credentials: false
+      - name: Install Java toolchains
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            8
+            16
+            17
+            25
+            21
+      - name: Build and test Fabric 26.3
+        run: ./gradlew :26.3:build --no-daemon --stacktrace "-Dorg.gradle.java.installations.fromEnv=JAVA_HOME_8_X64,JAVA_HOME_16_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64,JAVA_HOME_25_X64"
+      - name: Upload distributable JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: replaymod-26.3-sdl-fix
+          if-no-files-found: error
+          path: |
+            versions/26.3/build/libs/*.jar
+            !versions/26.3/build/libs/*-raw.jar
+            !versions/26.3/build/libs/*-sources.jar
