@@ -69,9 +69,14 @@ public class KeyBindingRegistry extends EventRegistrations {
         Binding binding = bindings.get(name);
         if (binding == null) {
             //#if FABRIC>=1
+            // Minecraft 26.3 switched keyboard input from GLFW key codes to SDL scancodes.
+            // SDL uses 0 for an unbound/unknown key, while -1 is outside the keyboard-state
+            // buffer read by InputConstants.isKeyDown and crashes when KeyMapping.setAll runs.
+            //#if MC<26.3
             if (keyCode == 0) {
                 keyCode = -1;
             }
+            //#endif
             Identifier id = identifier(MOD_ID, name.substring(LangResourcePack.LEGACY_KEY_PREFIX.length()));
             //#if MC>=11600
             String key = String.format("key.%s.%s", id.getNamespace(), id.getPath());
